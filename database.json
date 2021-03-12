@@ -1,0 +1,15 @@
+{
+  "defaultEnv": {
+    "ENV": "CRYPTO_NODE_ENV"
+  },
+  "development": {
+    "ENV": "CRYPTO_POSTGRES_DEV_URL"
+  },
+  "test": {
+    "ENV": "CRYPTO_POSTGRES_TEST_URL"
+  },
+  "production": {
+    "ENV": "CRYPTO_DATABASE_URL"
+  },
+  "sql-file": true
+}
