@@ -75,6 +75,7 @@ export default {
   REDIS_RUNNING: 'Redis server is running',
   CRYPTO_WALLET_RUNNING: 'CRYPTO wallet is running on PORT',
   USERNAME_ERROR: 'Username registered already',
+  PHONE_ERROR: 'Phone registered already',
   GENERIC_ERROR: 'Sorry, something went wrong',
   RESOURCE_NOT_EXISTS_IN_DB: 'User does not exists',
   FETCH_CATEGORY_SUCCESSFUL: 'Fetched all categories sucessfully',

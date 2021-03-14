@@ -1,12 +1,16 @@
 import queries from '../../db/queries/users';
 import Db from '../../db';
+import { Helper } from '../../utils';
 
-const { findUser, getAllCategory, findUserByToken } = queries;
+const {
+  createUser, findUserByEmail, findUserByUsername,
+  findUserByPhone, findUserByEmailOrUsername
+} = queries;
 /**
  *  Contains several methods to manage user resorces
  *  @class UserServices
  */
-class UserService {
+class UserServices {
   /**
    * Fetches a User by his/her email.
    * @memberof UserService
@@ -14,28 +18,98 @@ class UserService {
    * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
    * with a user resource  or a DB Error.
    */
-  static async fetchUser(email) {
-    return Db.oneOrNone(findUser, [email]);
+  static async fetchUserByEmail(email) {
+    return Db.oneOrNone(findUserByEmail, [email]);
   }
 
   /**
-   * Fetch all categories
+  * Fetches a User by his/her email.
+  * @memberof UserService
+  * @param { String } username - The username of the user.
+  * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+  * with a user resource  or a DB Error.
+  */
+  static async fetchUserByUsername(username) {
+    return Db.oneOrNone(findUserByUsername, [username]);
+  }
+
+  /**
+  * Fetches a User by his/her phone_no.
+  * @memberof UserService
+  * @param { String } phone_number - The username of the user.
+  * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+  * with a user resource  or a DB Error.
+  */
+  static async fetchUserByPhone(phone_number) {
+    return Db.oneOrNone(findUserByPhone, [phone_number]);
+  }
+
+  /**
+   * Creates a User.
    * @memberof UserService
+   * @param { Object } body - The body containing user info.
    * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
    * with a user resource  or a DB Error.
    */
-  static async fetchAllCategory() {
-    return Db.manyOrNone(getAllCategory, []);
+  static async createUser(body) {
+    const {
+      first_name, middle_name, last_name, username, email, phone_number,
+      date_of_birth, country, city, state, password
+    } = body;
+    const hashPassword = Helper.hashPassword(password);
+    const { hash, salt } = hashPassword;
+    const payload = [
+      first_name, middle_name, last_name, username, email, phone_number,
+      date_of_birth, country, city, state, hash, salt
+    ];
+    const result = await Db.oneOrNone(createUser, payload);
+    logger.info(result, 'SUCCESS');
+    return result;
   }
 
   /**
-   * find a user by  token in the database
-   * @param { String } token - token
-   * @returns { Promise< Error | Null > } A promise that resolves or rejects
+  * Fetches a User by his/her email.
+  * @memberof UserService
+  * @param { String } login_details - The username of the user.
+  * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+  * with a user resource  or a DB Error.
+  */
+  static async fetchUserByEmailOrUsername(login_details) {
+    return Db.oneOrNone(findUserByEmailOrUsername, [login_details]);
+  }
+
+  /**
+   * Login a User by his/her email or username.
+   * @memberof UserService
+   * @param { String } body - The username of the user.
+   * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+   * with a user resource  or a DB Error.
    */
-  static async findUserByToken(token) {
-    return Db.oneOrNone(findUserByToken, [token]);
+  static async loginUser(body) {
+    const { login_details } = body;
+    const result = await Db.oneOrNone(findUserByEmailOrUsername, [login_details]);
+    const {
+      id, first_name, middle_name, last_name, username, email,
+      phone_no, date_of_birth, country, city, state
+    } = result;
+    const token = Helper.addTokenToUser(result);
+    const data = {
+      id,
+      first_name,
+      middle_name,
+      last_name,
+      email,
+      username,
+      phone_no,
+      date_of_birth,
+      country,
+      city,
+      state,
+      token
+    };
+    logger.info(data, 'SUCCESS');
+    return data;
   }
 }
 
-export default UserService;
+export default UserServices;

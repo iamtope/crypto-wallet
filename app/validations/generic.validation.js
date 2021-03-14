@@ -1,10 +1,13 @@
+/* eslint-disable no-useless-escape */
+import joi from '@hapi/joi';
+
 /**
  * Validates a string input field
  * @param { Object } joi - Joi object.
  * @param { String } field - Field to be validated.
  * @returns { Object } A Joi validation schema.
  */
-const nameSchema = (joi, field) => joi
+const nameSchema = (field) => joi
   .string()
   .required()
   .trim()
@@ -23,7 +26,7 @@ const nameSchema = (joi, field) => joi
  * @param { String } field - Field to be validated.
  * @returns { Object } A Joi validation schema.
  */
-const phoneSchema = (joi) => joi
+const phoneSchema = () => joi
   .string()
   .required()
   .trim()
@@ -52,9 +55,9 @@ const passwordSchema = (Joi) => Joi.string()
     'string.base': 'Password must be a valid string',
     'string.empty': 'Password field cannot be empty',
     'any.required':
-        'Password field is required else password cannot be updated',
+      'Password field is required else password cannot be updated',
     'object.pattern.match':
-        'The only validate combinations are numbers, alphabets, and these characters: a-zA-Z0-9@#%$!+:_|-',
+      'The only validate combinations are numbers, alphabets, and these characters: a-zA-Z0-9@#%$!+:_|-',
   });
 
 /**
@@ -70,4 +73,71 @@ const emailValidate = (Joi) => Joi.string().email().trim().required()
     'any.required': 'Email Address must be provided',
   });
 
-export { nameSchema, phoneSchema, passwordSchema, emailValidate };
+/**
+ * Validates user signup
+ * @param { Object } Joi - Joi object.
+ * @param { String } field - Field to be validated.
+ * @returns { Object } A Joi validation schema.
+ */
+const userSchema = joi.object({
+  first_name: joi.string().trim().lowercase({ convert: true }).required(),
+  middle_name: joi.string().trim().lowercase({ convert: true }),
+  last_name: joi.string().trim().lowercase({ convert: true }).required(),
+  username: joi.string().trim().lowercase({ convert: true }).min(5)
+    .required(),
+  email: joi.string().trim().lowercase({ convert: true }).email()
+    .required(),
+  phone_number: joi.string().trim().pattern(new RegExp('[0-9+]+')).min(7)
+    .max(15)
+    .required()
+    .messages({
+      'string.base': 'Phone number must contain only numbers',
+      'string.empty': 'Phone number cannot be empty',
+      'object.pattern.match': 'Phone number must contain only numbers',
+      'string.max': 'Phone number should not be more than 15 characters',
+      'string.min': 'Phone number should not be less than 7 characters',
+    }),
+  date_of_birth: joi.date().required(),
+  country: joi.string().trim().lowercase({ convert: true }).required(),
+  city: joi.string().trim().lowercase({ convert: true }).required(),
+  state: joi.string().trim().lowercase({ convert: true }).required(),
+  password: joi.string().trim()
+    .pattern(new RegExp('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,30}$'))
+    .required()
+    .messages({
+      'string.base': 'Password must be a valid string',
+      'string.empty': 'Password field cannot be empty',
+      'any.required': 'Password field is required',
+      'string.max': 'Phone number should not be more than 30 characters',
+      'string.min': 'Phone number should not be less than 5 characters',
+      'object.pattern.match':
+        'Password must contains at least a symbol, uppercase, lowercase, and number',
+    })
+});
+
+/**
+ * Validates user login
+ * @param { Object } Joi - Joi object.
+ * @param { String } field - Field to be validated.
+ * @returns { Object } A Joi validation schema.
+ */
+const loginSchema = joi.object({
+  login_details: joi.string(),
+  password: joi.string().trim()
+    .pattern(new RegExp('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,30}$'))
+    .required()
+    .messages({
+      'string.base': 'Password must be a valid string',
+      'string.empty': 'Password field cannot be empty',
+      'any.required': 'Password field is required',
+      'string.max': 'Phone number should not be more than 30 characters',
+      'string.min': 'Phone number should not be less than 5 characters',
+      'object.pattern.match':
+        'Password must contains at least a symbol, uppercase, lowercase, and number',
+    })
+});
+
+export {
+  nameSchema, phoneSchema, passwordSchema, emailValidate, userSchema,
+  loginSchema
+};
