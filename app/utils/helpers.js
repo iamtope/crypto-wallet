@@ -78,9 +78,9 @@ class Helper {
    */
   static hashPassword(plainPassword) {
     const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(plainPassword, salt);
     return {
-      salt,
-      hash: Helper.generateHash(salt, plainPassword),
+      salt, hash
     };
   }
 
@@ -112,6 +112,24 @@ class Helper {
   static compareHash(plain, hash, salt) {
     const hashMatch = Helper.generateHash(salt, plain);
     return hash === hashMatch;
+  }
+
+  /**
+   * This checks if a plain text matches a certain hash value by generating
+   * a new hash with the salt used to create that hash.
+   * @static
+   * @param {string} plain - plain text to be used in the comparison.
+   * @param {string} hash - hashed value created with the salt.
+   * @param {string} salt - original salt value.
+   * @memberof Helper
+   * @returns {boolean} - returns a true or false, depending on the outcome of the comparison.
+   */
+  static comparePassword(plain, hash) {
+    const validPassword = bcrypt.compareSync(plain, hash);
+    if (validPassword) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -157,14 +175,7 @@ class Helper {
       role,
       phone_no,
     });
-    return {
-      id,
-      first_name,
-      last_name,
-      email,
-      role,
-      token,
-    };
+    return token;
   }
 
   /**

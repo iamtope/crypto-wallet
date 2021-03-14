@@ -41,15 +41,6 @@
     "no-underscore-dangle": 0,
     "object-curly-newline": 0,
     "arrow-parens": 0,
-    "valid-jsdoc": [
-      "error",
-      {
-        "requireReturn": true,
-        "requireReturnType": true,
-        "requireParamDescription": false,
-        "requireReturnDescription": true
-      }
-    ],
     "require-jsdoc": [
       "error",
       {
