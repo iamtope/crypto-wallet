@@ -23,5 +23,13 @@ export default {
   findUserByPhone: 'SELECT * FROM users WHERE phone_no=$1',
   findUserByEmailOrUsername: 'SELECT * FROM users WHERE email=$1 OR username=$1',
   saveUserEthPassword: 'UPDATE users SET eth_address_password = $1 WHERE id = $2',
-  saveWalletAddress: 'INSERT INTO wallet(user_id, coin, address) VALUES($1, $2, $3)'
+  saveWalletAddress: 'INSERT INTO wallet(user_id, coin, address) VALUES($1, $2, $3)',
+  addPinToUser: `
+  UPDATE users
+  SET 
+      transaction_pin=$1,
+      transaction_salt=$2
+   WHERE
+      id=($3)
+  `
 };

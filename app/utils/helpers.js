@@ -85,6 +85,21 @@ class Helper {
   }
 
   /**
+   * This is used for generating a hash and a salt from a user's password.
+   * @static
+   * @param {string} plainPassword - password to be encrypted.
+   * @memberof Helper
+   * @returns {Object} - An object containing the hash and salt of a password.
+   */
+  static hashPIN(plainPassword) {
+    const salt = bcrypt.genSaltSync(10);
+    return {
+      salt,
+      hash: Helper.generateHash(salt, plainPassword)
+    };
+  }
+
+  /**
    * This generates a hash.
    * @static
    * @param {String} salt - A random string.
@@ -166,13 +181,13 @@ class Helper {
    * @returns {object } - A new object containing essential user properties and jwt token.
    */
   static addTokenToUser(user) {
-    const { id, first_name, last_name, email, role, phone_no } = user;
+    const { id, first_name, last_name, email, username, phone_no } = user;
     const token = Helper.generateToken({
       id,
       first_name,
       last_name,
       email,
-      role,
+      username,
       phone_no,
     });
     return token;

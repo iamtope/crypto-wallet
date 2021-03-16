@@ -20,10 +20,10 @@ const postOptions = {
   },
 };
 
-const { CHAINGATE_BASEURL } = constants;
+const { CHAINGATE_BASEURL, ETHERSCAN_BASEURL } = constants;
 
 export default class Request {
-  static async makeRequest(url, data = {}, method = 'GET') {
+  static async makeChainGateRequest(url, data = {}, method = 'POST') {
     const apiKeys = await db.manyOrNone(getApiKeys);
     let index = 0;
     postOptions.body = JSON.stringify(data);
@@ -31,14 +31,30 @@ export default class Request {
     postOptions.headers.Authorization = currentKey.api_key;
     postOptions.method = method;
     let res = await fetch(`${CHAINGATE_BASEURL}${url}`, postOptions);
-    res = res.json();
+    res = await res.json();
     if (res.status === 403) {
       postOptions.headers.Authorization = currentKey.api_key;
       postOptions.method = method;
       index += 1;
-      return Request.makeRequest(url, data, method);
+      return Request.makeChainGateRequest(url, data, method);
     }
     db.none(updateCallsCount, [+currentKey.no_of_calls + 1, currentKey.id]);
     return res;
+  }
+
+  static async makeEtherScanRequest(params) {
+    const query = Object.keys(params)
+      .map(
+        (k) => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`
+      )
+      .join('&');
+    let res = await fetch(`${ETHERSCAN_BASEURL}${query}`);
+    res = await res.json();
+    return res;
+  }
+
+  static formatEth(data) {
+    return data.map((el) => (
+      { ...el, value: el.value / 1e18, timeStamp: new Date(el.timeStamp * 1000).toTimeString() }));
   }
 }

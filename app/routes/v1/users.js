@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import UserMiddlewares from '../../middlewares/user';
 import UserControllers from '../../controllers/users';
+import AuthMiddleware from '../../middlewares/auth';
 
 const router = Router();
 
@@ -18,7 +19,11 @@ router.post(
   UserControllers.loginUser
 );
 
-router.post('/create/wallet', UserControllers.createWalletAddress);
-router.get('/xkx', UserControllers.getBal);
+router.post(
+  '/pin',
+  UserMiddlewares.pinUpdateValidator,
+  AuthMiddleware.authenticate,
+  UserControllers.createTxPin
+);
 
 export default router;

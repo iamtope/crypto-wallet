@@ -102,7 +102,6 @@ const userSchema = joi.object({
   city: joi.string().trim().lowercase({ convert: true }).required(),
   state: joi.string().trim().lowercase({ convert: true }).required(),
   password: joi.string().trim()
-    .pattern(new RegExp('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,30}$'))
     .required()
     .messages({
       'string.base': 'Password must be a valid string',
@@ -124,7 +123,6 @@ const userSchema = joi.object({
 const loginSchema = joi.object({
   login_details: joi.string(),
   password: joi.string().trim()
-    .pattern(new RegExp('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{5,30}$'))
     .required()
     .messages({
       'string.base': 'Password must be a valid string',
