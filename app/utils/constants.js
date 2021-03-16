@@ -80,5 +80,6 @@ export default {
   RESOURCE_NOT_EXISTS_IN_DB: 'User does not exists',
   FETCH_CATEGORY_SUCCESSFUL: 'Fetched all categories sucessfully',
   SAVE_TOKEN_FAIL: 'SAVE_VERIFICATION_TOKEN_FAIL',
-  TOKEN_NOT_EXIST: 'Token does not exist or expired'
+  TOKEN_NOT_EXIST: 'Token does not exist or expired',
+  CREATE_WALLET_SUCCESSFULLY: 'Wallet created successfully'
 };

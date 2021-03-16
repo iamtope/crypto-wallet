@@ -3,8 +3,13 @@ import Db from '../../db';
 import { Helper } from '../../utils';
 
 const {
-  createUser, findUserByEmail, findUserByUsername,
-  findUserByPhone, findUserByEmailOrUsername
+  createUser,
+  findUserByEmail,
+  findUserByUsername,
+  findUserByPhone,
+  findUserByEmailOrUsername,
+  saveUserEthPassword,
+  saveWalletAddress
 } = queries;
 /**
  *  Contains several methods to manage user resorces
@@ -109,6 +114,31 @@ class UserServices {
     };
     logger.info(data, 'SUCCESS');
     return data;
+  }
+
+  /**
+   * Saves a user eth wallet password
+   * @memberof UserService
+   * @param { String } password - The password of the user
+   * @param { String } id - The id of the user
+   * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+   * with a user resource  or a DB Error.
+   */
+  static async saveEthPassword(password, id) {
+    return Db.none(saveUserEthPassword, [password, id]);
+  }
+
+  /**
+   * Saves user wallet address
+   * @memberof UserService
+   * @param { String } user_id - The id of the user.
+   * @param { String } coin - The type of coin.
+   * @param { String } address - The address of the user.
+   * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+   * with a user resource  or a DB Error.
+   */
+  static async saveWalletAddress(user_id, coin, address) {
+    return Db.none(saveWalletAddress, [user_id, coin, address]);
   }
 }
 
