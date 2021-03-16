@@ -1,14 +1,14 @@
-import UserServices from '../../services/user/index';
-import { constants, Helper, ChainGateway } from '../../utils';
+import UserServices from '../../services/user';
+import { constants, Helper, ApiError } from '../../utils';
 
 const {
   CREATE_USER_SUCCESSFULLY,
   LOGIN_USER_SUCCESSFULLY,
-  CREATE_WALLET_SUCCESSFULLY,
+  PIN_UPDATE_SUCCESS,
+  CREATE_PIN_ERROR,
+  CREATE_PIN_ERROR_MSG
 } = constants;
-const { successResponse } = Helper;
-
-const apikey = process.env.CHNAGE_GATEWAY_API_KEY;
+const { successResponse, moduleErrLogMessager } = Helper;
 
 /**
  *  Contains several methods to manage user controllers
@@ -51,23 +51,24 @@ class UserControllers {
 
   /**
      * Create wallet password
+     * Login controller.
      * @memberof UserControllers
      * @param { req, res, next } req - The username of the user.
      * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
      * with a user resource  or a DB Error.
      */
-  static async createWalletAddress(req, res, next) {
+  static async createTxPin(req, res, next) {
     try {
-      const password = Helper.generateVerificationToken();
-      const token = req.headers.authorization;
-      const { id } = Helper.verifyToken(token, process.env.CRYPTO_SECRET);
-      await UserServices.saveEthPassword(password, id);
-      const data = await ChainGateway.createEthWalletAddress(password, apikey);
-      await UserServices.saveWalletAddress(id, 'eth', data.ethereumaddress);
-      successResponse(res, { data, message: CREATE_WALLET_SUCCESSFULLY, code: 201 });
-    } catch (error) {
-      logger.error(error, 'ERROR');
-      next(error);
+      await UserServices.updateTxPin(req.body.pin, req.data.id);
+      successResponse(res, { message: PIN_UPDATE_SUCCESS });
+    } catch (e) {
+      e.status = CREATE_PIN_ERROR;
+      moduleErrLogMessager(e);
+      const apiError = new ApiError({
+        status: 500,
+        message: CREATE_PIN_ERROR_MSG,
+      });
+      next(apiError);
     }
   }
 }

@@ -6,6 +6,7 @@ import ModuleError from './error/module.error';
 import DBError from './error/db.error';
 import Email from './email';
 import ChainGateway from './chaingateway';
+import Request from './api';
 
 export {
   Helper,
@@ -15,5 +16,6 @@ export {
   ModuleError,
   DBError,
   Email,
-  ChainGateway
+  ChainGateway,
+  Request
 };

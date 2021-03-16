@@ -55,6 +55,6 @@ CREATE TABLE IF NOT EXISTS api_key(
   no_of_calls INTEGER,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
-   )
+)
 
 

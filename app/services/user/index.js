@@ -1,5 +1,5 @@
 import queries from '../../db/queries/users';
-import Db from '../../db';
+import db from '../../db';
 import { Helper } from '../../utils';
 
 const {
@@ -9,10 +9,13 @@ const {
   findUserByPhone,
   findUserByEmailOrUsername,
   saveUserEthPassword,
-  saveWalletAddress
+  saveWalletAddress,
+  addPinToUser
 } = queries;
+const { hashPassword, hashPIN } = Helper;
+
 /**
- *  Contains several methods to manage user resorces
+ *  Contains several methods to manage user resources
  *  @class UserServices
  */
 class UserServices {
@@ -24,7 +27,7 @@ class UserServices {
    * with a user resource  or a DB Error.
    */
   static async fetchUserByEmail(email) {
-    return Db.oneOrNone(findUserByEmail, [email]);
+    return db.oneOrNone(findUserByEmail, [email]);
   }
 
   /**
@@ -35,7 +38,7 @@ class UserServices {
   * with a user resource  or a DB Error.
   */
   static async fetchUserByUsername(username) {
-    return Db.oneOrNone(findUserByUsername, [username]);
+    return db.oneOrNone(findUserByUsername, [username]);
   }
 
   /**
@@ -46,7 +49,7 @@ class UserServices {
   * with a user resource  or a DB Error.
   */
   static async fetchUserByPhone(phone_number) {
-    return Db.oneOrNone(findUserByPhone, [phone_number]);
+    return db.oneOrNone(findUserByPhone, [phone_number]);
   }
 
   /**
@@ -61,13 +64,12 @@ class UserServices {
       first_name, middle_name, last_name, username, email, phone_number,
       date_of_birth, country, city, state, password
     } = body;
-    const hashPassword = Helper.hashPassword(password);
-    const { hash, salt } = hashPassword;
+    const { hash, salt } = hashPassword(password);
     const payload = [
       first_name, middle_name, last_name, username, email, phone_number,
       date_of_birth, country, city, state, hash, salt
     ];
-    const result = await Db.oneOrNone(createUser, payload);
+    const result = await db.oneOrNone(createUser, payload);
     logger.info(result, 'SUCCESS');
     return result;
   }
@@ -80,7 +82,7 @@ class UserServices {
   * with a user resource  or a DB Error.
   */
   static async fetchUserByEmailOrUsername(login_details) {
-    return Db.oneOrNone(findUserByEmailOrUsername, [login_details]);
+    return db.oneOrNone(findUserByEmailOrUsername, [login_details]);
   }
 
   /**
@@ -92,10 +94,10 @@ class UserServices {
    */
   static async loginUser(body) {
     const { login_details } = body;
-    const result = await Db.oneOrNone(findUserByEmailOrUsername, [login_details]);
+    const result = await db.oneOrNone(findUserByEmailOrUsername, [login_details]);
     const {
       id, first_name, middle_name, last_name, username, email,
-      phone_no, date_of_birth, country, city, state
+      phone_no, date_of_birth, country, city, state, transaction_pin
     } = result;
     const token = Helper.addTokenToUser(result);
     const data = {
@@ -110,7 +112,8 @@ class UserServices {
       country,
       city,
       state,
-      token
+      token,
+      hasPin: !!transaction_pin
     };
     logger.info(data, 'SUCCESS');
     return data;
@@ -125,7 +128,7 @@ class UserServices {
    * with a user resource  or a DB Error.
    */
   static async saveEthPassword(password, id) {
-    return Db.none(saveUserEthPassword, [password, id]);
+    return db.none(saveUserEthPassword, [password, id]);
   }
 
   /**
@@ -138,7 +141,20 @@ class UserServices {
    * with a user resource  or a DB Error.
    */
   static async saveWalletAddress(user_id, coin, address) {
-    return Db.none(saveWalletAddress, [user_id, coin, address]);
+    return db.none(saveWalletAddress, [user_id, coin, address]);
+  }
+
+  /**
+   * Saves user wallet address
+   * @memberof UserService
+   * @param { String } pin - The pin for tx
+   * @param { String } userId - The id of the user.
+   * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+   * with a user resource  or a DB Error.
+   */
+  static updateTxPin(pin, userId) {
+    const { hash, salt } = hashPIN(pin);
+    return db.none(addPinToUser, [hash, salt, userId]);
   }
 }
 
