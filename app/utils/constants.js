@@ -34,7 +34,7 @@ export default {
   SUCCESS: 'success',
   SUCCESS_RESPONSE: 'Request was successfully processed',
   FAIL: 'fail',
-  WELCOME: 'Thanks for dropping by, you are at streak for cash',
+  WELCOME: 'Thanks for dropping by,you are crypto backend',
   v1: '/api/v1',
   DB_ERROR: 'A database error occurred, either in redis or postgres',
   MODULE_ERROR: 'A module error occurred',
