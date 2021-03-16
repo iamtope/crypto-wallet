@@ -81,5 +81,7 @@ export default {
   FETCH_CATEGORY_SUCCESSFUL: 'Fetched all categories sucessfully',
   SAVE_TOKEN_FAIL: 'SAVE_VERIFICATION_TOKEN_FAIL',
   TOKEN_NOT_EXIST: 'Token does not exist or expired',
-  CREATE_WALLET_SUCCESSFULLY: 'Wallet created successfully'
+  CREATE_WALLET_SUCCESSFULLY: 'Wallet created successfully',
+  CHAINGATE_BASEURL: 'https://eu.eth.chaingateway.io/v1/',
+  AXIOS_CONFIG: { Authorization: '' }
 };

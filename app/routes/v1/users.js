@@ -19,5 +19,6 @@ router.post(
 );
 
 router.post('/create/wallet', UserControllers.createWalletAddress);
+router.get('/xkx', UserControllers.getBal);
 
 export default router;
