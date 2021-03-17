@@ -9,14 +9,12 @@ export default {
          email, 
          phone_no,
          date_of_birth, 
-         country, 
-         city, 
-         state, 
+         address, 
          password, 
          salt
-         ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+         ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id, first_name, middle_name, last_name, username, email, 
-      phone_no, date_of_birth, country, city, state
+      phone_no, date_of_birth
    `,
   findUserByEmail: 'SELECT * FROM users WHERE email=$1',
   findUserByUsername: 'SELECT * FROM users WHERE username=$1',

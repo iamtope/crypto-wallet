@@ -81,7 +81,6 @@ const emailValidate = (Joi) => Joi.string().email().trim().required()
  */
 const userSchema = joi.object({
   first_name: joi.string().trim().lowercase({ convert: true }).required(),
-  middle_name: joi.string().trim().lowercase({ convert: true }),
   last_name: joi.string().trim().lowercase({ convert: true }).required(),
   username: joi.string().trim().lowercase({ convert: true }).min(5)
     .required(),
@@ -98,9 +97,7 @@ const userSchema = joi.object({
       'string.min': 'Phone number should not be less than 7 characters',
     }),
   date_of_birth: joi.date().required(),
-  country: joi.string().trim().lowercase({ convert: true }).required(),
-  city: joi.string().trim().lowercase({ convert: true }).required(),
-  state: joi.string().trim().lowercase({ convert: true }).required(),
+  address: joi.string().trim().lowercase({ convert: true }).required(),
   password: joi.string().trim()
     .required()
     .messages({
