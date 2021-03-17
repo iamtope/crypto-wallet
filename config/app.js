@@ -7,12 +7,10 @@ import Ddos from 'ddos';
 import apiV1Routes from '../app/routes/v1';
 import config from './env';
 import { Helper, genericErrors, constants } from '../app/utils';
-import redisDB from '../app/db/setup/redis';
-// import initCron from '../app/jobs/crons';
 
 const { errorResponse, successResponse } = Helper;
 const { notFoundApi } = genericErrors;
-const { WELCOME, v1, REDIS_RUNNING } = constants;
+const { WELCOME, v1 } = constants;
 const ddos = new Ddos({ burst: 10, limit: 15 });
 
 const appConfig = (app) => {
@@ -43,9 +41,6 @@ const appConfig = (app) => {
 
   // initialize cron jobs
   // initCron();
-
-  // checks redis server for successful connection.
-  redisDB.on('connect', () => logger.info(REDIS_RUNNING));
 
   // initialize the port constant
   const port = config.PORT || 3000;
