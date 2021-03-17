@@ -42,8 +42,9 @@ const appConfig = (app) => {
   // initialize cron jobs
   // initCron();
 
+  console.log(config.PORT);
   // initialize the port constant
-  const port = config.PORT || 3000;
+  const port = config.PORT;
   // server listens for connections
   app.listen(port, () => {
     logger.info(`${'CRYPTO'} ${port}`);
