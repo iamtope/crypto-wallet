@@ -3,10 +3,7 @@ import pg from 'pg-promise';
 import config from '../../../config/env';
 
 const options = {
-  promiseLib: promise,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  promiseLib: promise
 };
 
 const pgp = pg(options);
