@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import dotenv from 'dotenv/config';
 import Ddos from 'ddos';
 import apiV1Routes from '../app/routes/v1';
 import config from './env';
@@ -42,9 +43,9 @@ const appConfig = (app) => {
   // initialize cron jobs
   // initCron();
 
-  console.log(config.PORT);
+  //   console.log(config.PORT);
   // initialize the port constant
-  const port = config.PORT;
+  const port = process.env.PORT || 3000;
   // server listens for connections
   app.listen(port, () => {
     logger.info(`${'CRYPTO'} ${port}`);
