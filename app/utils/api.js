@@ -26,6 +26,7 @@ const { CHAINGATE_BASEURL, ETHERSCAN_BASEURL } = constants;
 export default class Request {
   static async makeChainGateRequest(url, data = {}, method = 'POST') {
     const apiKeys = await db.manyOrNone(getApiKeys);
+    console.log(apiKeys);
     let index = 0;
     postOptions.body = JSON.stringify(data);
     const currentKey = apiKeys[index];
