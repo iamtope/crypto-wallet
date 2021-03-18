@@ -73,6 +73,8 @@ class WalletController {
         code: 201,
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
       e.status = CREATE_ETH_ADDRESS_ERROR;
       moduleErrLogMessager(e);
       const apiError = new ApiError({
