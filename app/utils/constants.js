@@ -45,7 +45,7 @@ export default {
     'Error verifying existence of email, try again.',
   USER_NOT_FOUND_MSG: 'A USER with the id provided was not found',
   USER_NOT_FOUND: 'USER_NOT_FOUND',
-  CREATE_USER_SUCCESSFULLY: 'Successfully registered USER to FACILITY.',
+  CREATE_USER_SUCCESSFULLY: 'Successfully registered user.',
   CREATE_USER_FAILED: 'Error registering USER',
   LOGIN_USER_SUCCESSFULLY: 'Successfully logged in user',
   FETCH_USERS_SUCCESSFULLY: 'Successfully retrieved users',
@@ -99,6 +99,11 @@ export default {
     startblock: 0,
     endblock: 99999999,
     sort: 'desc'
+  },
+  DOLLAR_RATE_PARAM: {
+    module: 'stats',
+    action: 'ethprice',
+    apikey: config.ETHERSCAN_APIKEY
   },
   BALANCE_FETCHED: 'Balance fetched successfully',
   GET_BALANCE_ERROR: 'GET_BALANCE_ERROR',

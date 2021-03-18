@@ -62,12 +62,12 @@ class UserServices {
   static async createUser(body) {
     const {
       first_name, middle_name, last_name, username, email, phone_number,
-      date_of_birth, country, city, state, password
+      date_of_birth, address, password
     } = body;
     const { hash, salt } = hashPassword(password);
     const payload = [
       first_name, middle_name, last_name, username, email, phone_number,
-      date_of_birth, country, city, state, hash, salt
+      date_of_birth, address, hash, salt
     ];
     const result = await db.oneOrNone(createUser, payload);
     logger.info(result, 'SUCCESS');
@@ -97,7 +97,7 @@ class UserServices {
     const result = await db.oneOrNone(findUserByEmailOrUsername, [login_details]);
     const {
       id, first_name, middle_name, last_name, username, email,
-      phone_no, date_of_birth, country, city, state, transaction_pin
+      phone_no, date_of_birth, transaction_pin
     } = result;
     const token = Helper.addTokenToUser(result);
     const data = {
@@ -109,9 +109,6 @@ class UserServices {
       username,
       phone_no,
       date_of_birth,
-      country,
-      city,
-      state,
       token,
       hasPin: !!transaction_pin
     };

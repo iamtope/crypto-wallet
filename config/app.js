@@ -40,10 +40,6 @@ const appConfig = (app) => {
   // handles all forwarded errors
   app.use((err, req, res, next) => errorResponse(req, res, err));
 
-  // initialize cron jobs
-  // initCron();
-
-  //   console.log(config.PORT);
   // initialize the port constant
   const port = process.env.PORT || 3000;
   // server listens for connections

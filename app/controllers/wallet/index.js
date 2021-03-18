@@ -6,7 +6,7 @@ const { BALANCE_PARAM, CREATE_WALLET_SUCCESSFULLY,
   GET_BALANCE_ERROR_MSG, CREATE_ETH_ADDRESS_ERROR,
   CREATE_ETH_ADDRESS_ERROR_MSG, NEW_ADDRESS, SEND_ETHER, TX_SUCCESS,
   ETH_TRANSFER_ERROR, ETH_TRANSFER_ERROR_MSG, TX_HISTORY_FETCHED,
-  TX_HISTORY_ERROR, TX_HISTORY_ERROR_MSG } = constants;
+  TX_HISTORY_ERROR, TX_HISTORY_ERROR_MSG, DOLLAR_RATE_PARAM } = constants;
 const { successResponse, moduleErrLogMessager, errorResponse } = Helper;
 
 /**
@@ -24,11 +24,16 @@ class WalletController {
   static async getBalance(req, res, next) {
     try {
       BALANCE_PARAM.address = req.wallet.address;
-      const data = await Request.makeEtherScanRequest(BALANCE_PARAM);
+      const [{ result }, { result: { ethusd } }] = await Promise.all(
+        [Request.makeEtherScanRequest(BALANCE_PARAM),
+          Request.makeEtherScanRequest(DOLLAR_RATE_PARAM)]
+      );
       successResponse(res, {
         message: BALANCE_FETCHED,
         data: {
-          balance: data.result / 1e18,
+          balance: result / 1e18,
+          balanceInDollars: (result / 1e18) * ethusd,
+          ethPrice: ethusd
         },
       });
     } catch (error) {
@@ -130,8 +135,12 @@ class WalletController {
   static async getEthTx(req, res, next) {
     try {
       TX_HISTORY_PARAM.address = req.wallet.address;
-      const { result } = await Request.makeEtherScanRequest(TX_HISTORY_PARAM);
-      successResponse(res, { message: TX_HISTORY_FETCHED, data: Request.formatEth(result) });
+      const [{ result }, { result: { ethusd } }] = await Promise.all(
+        [Request.makeEtherScanRequest(TX_HISTORY_PARAM),
+          Request.makeEtherScanRequest(DOLLAR_RATE_PARAM)]
+      );
+      successResponse(res, {
+        message: TX_HISTORY_FETCHED, data: Request.formatEth(result, ethusd) });
     } catch (e) {
       e.status = TX_HISTORY_ERROR;
       moduleErrLogMessager(e);
