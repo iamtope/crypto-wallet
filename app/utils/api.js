@@ -28,6 +28,7 @@ export default class Request {
     let index = 0;
     postOptions.body = JSON.stringify(data);
     const currentKey = apiKeys[index];
+    // eslint-disable-next-line no-console
     console.log(currentKey);
     postOptions.headers.Authorization = currentKey.api_key;
     postOptions.method = method;
