@@ -28,6 +28,7 @@ export default class Request {
     let index = 0;
     postOptions.body = JSON.stringify(data);
     const currentKey = apiKeys[index];
+    console.log(currentKey);
     postOptions.headers.Authorization = currentKey.api_key;
     postOptions.method = method;
     let res = await fetch(`${CHAINGATE_BASEURL}${url}`, postOptions);
