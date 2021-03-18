@@ -33,7 +33,8 @@ class WalletController {
         data: {
           balance: result / 1e18,
           balanceInDollars: (result / 1e18) * ethusd,
-          ethPrice: ethusd
+          ethPrice: ethusd,
+          ethAddress: req.wallet.address
         },
       });
     } catch (error) {
