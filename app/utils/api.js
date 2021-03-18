@@ -1,12 +1,13 @@
 /* eslint-disable require-jsdoc */
-
 import fetch from 'node-fetch';
 import bluebird from 'bluebird';
-
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import constants from './constants';
 import db from '../db';
 import queries from '../db/queries/api.key';
 
+dayjs.extend(relativeTime);
 fetch.Promise = bluebird;
 
 const { updateCallsCount, getApiKeys } = queries;
@@ -53,8 +54,13 @@ export default class Request {
     return res;
   }
 
-  static formatEth(data) {
+  static formatEth(data, dollarRate) {
     return data.map((el) => (
-      { ...el, value: el.value / 1e18, timeStamp: new Date(el.timeStamp * 1000).toTimeString() }));
+      { ...el,
+        value: el.value / 1e18,
+        valueInDollars: (el.value / 1e18) * dollarRate,
+        timeStamp: `${dayjs(el.timeStamp * 1000).fromNow()} - (${dayjs(el.timeStamp * 1000).format('ddd MMM-DD-YYYY H:mm:ss Z')})`,
+        fee: (el.gasUsed * el.gasPrice) / 1e18,
+        feeInDollars: ((el.gasUsed * el.gasPrice) / 1e18) * dollarRate }));
   }
 }

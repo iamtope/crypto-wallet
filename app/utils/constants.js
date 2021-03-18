@@ -100,6 +100,11 @@ export default {
     endblock: 99999999,
     sort: 'desc'
   },
+  DOLLAR_RATE_PARAM: {
+    module: 'stats',
+    action: 'ethprice',
+    apikey: config.ETHERSCAN_APIKEY
+  },
   BALANCE_FETCHED: 'Balance fetched successfully',
   GET_BALANCE_ERROR: 'GET_BALANCE_ERROR',
   GET_BALANCE_ERROR_MSG: 'Error while getting balance info',
