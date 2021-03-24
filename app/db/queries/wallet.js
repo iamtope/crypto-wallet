@@ -1,3 +1,4 @@
 export default {
-  fetchWalletAddress: 'SELECT * FROM wallet WHERE user_id = $1',
+  fetchEthWalletAddress: 'SELECT * FROM wallet WHERE user_id = $1 AND coin =\'eth\'',
+  fetchBtcWalletAddress: 'SELECT * FROM wallet WHERE user_id = $1 AND coin =\'btc\'',
 };
