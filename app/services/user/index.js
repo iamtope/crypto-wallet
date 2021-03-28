@@ -10,7 +10,8 @@ const {
   findUserByEmailOrUsername,
   saveUserEthPassword,
   saveWalletAddress,
-  addPinToUser
+  addPinToUser,
+  saveWalletKey
 } = queries;
 const { hashPassword, hashPIN } = Helper;
 
@@ -138,7 +139,7 @@ class UserServices {
    * with a user resource  or a DB Error.
    */
   static async saveWalletAddress(user_id, coin, address) {
-    return db.none(saveWalletAddress, [user_id, coin, address]);
+    return db.oneOrNone(saveWalletAddress, [user_id, coin, address]);
   }
 
   /**
@@ -152,6 +153,20 @@ class UserServices {
   static updateTxPin(pin, userId) {
     const { hash, salt } = hashPIN(pin);
     return db.none(addPinToUser, [hash, salt, userId]);
+  }
+
+  /**
+   * Saves user wallet key
+   * @memberof UserService
+   * @param { String } user_id - The id of the user.
+   * @param { String } coin - The type of coin.
+   * @param { String } address - The address of the user.
+   * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+   * with a user resource  or a DB Error.
+   */
+  static async saveBtcWalletAddress(user_id, coin, address, private_key, public_key, passphrase) {
+    const result = await this.saveWalletAddress(user_id, coin, address);
+    return db.none(saveWalletKey, [result.id, private_key, public_key, passphrase]);
   }
 }
 

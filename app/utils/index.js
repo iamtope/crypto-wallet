@@ -7,6 +7,7 @@ import DBError from './error/db.error';
 import Email from './email';
 import ChainGateway from './chaingateway';
 import Request from './api';
+import BitcoinHelpers from './bitcoin';
 
 export {
   Helper,
@@ -17,5 +18,6 @@ export {
   DBError,
   Email,
   ChainGateway,
-  Request
+  Request,
+  BitcoinHelpers
 };

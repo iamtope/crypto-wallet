@@ -1,12 +1,16 @@
-import { constants, Helper, Request, DBError, ApiError } from '../../utils';
+import {
+  constants, Helper, Request, DBError, ApiError,
+  BitcoinHelpers
+} from '../../utils';
 import UserServices from '../../services/user';
 
 const { BALANCE_PARAM, CREATE_WALLET_SUCCESSFULLY,
   TX_HISTORY_PARAM, BALANCE_FETCHED, GET_BALANCE_ERROR,
-  GET_BALANCE_ERROR_MSG, CREATE_ETH_ADDRESS_ERROR,
+  GET_BALANCE_ERROR_MSG, CREATE_ETH_ADDRESS_ERROR, CREATE_BTC_ADDRESS_ERROR,
   CREATE_ETH_ADDRESS_ERROR_MSG, NEW_ADDRESS, SEND_ETHER, TX_SUCCESS,
-  ETH_TRANSFER_ERROR, ETH_TRANSFER_ERROR_MSG, TX_HISTORY_FETCHED,
-  TX_HISTORY_ERROR, TX_HISTORY_ERROR_MSG, DOLLAR_RATE_PARAM } = constants;
+  ETH_TRANSFER_ERROR, BTC_TRANSFER_ERROR, ETH_TRANSFER_ERROR_MSG, BTC_TRANSFER_ERROR_MSG,
+  TX_HISTORY_FETCHED, TX_HISTORY_ERROR, TX_HISTORY_ERROR_MSG, DOLLAR_RATE_PARAM
+} = constants;
 const { successResponse, moduleErrLogMessager, errorResponse } = Helper;
 
 /**
@@ -143,7 +147,123 @@ class WalletController {
           Request.makeEtherScanRequest(DOLLAR_RATE_PARAM)]
       );
       successResponse(res, {
-        message: TX_HISTORY_FETCHED, data: Request.formatEth(result, ethusd) });
+        message: TX_HISTORY_FETCHED, data: Request.formatEth(result, ethusd)
+      });
+    } catch (e) {
+      e.status = TX_HISTORY_ERROR;
+      moduleErrLogMessager(e);
+      const apiError = new ApiError({
+        status: 500,
+        message: TX_HISTORY_ERROR_MSG,
+      });
+      next(apiError);
+    }
+  }
+
+  /**
+     * Create wallet password
+     * Login controller.
+     * @memberof UserControllers
+     * @param { req, res, next } req - The username of the user.
+     * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+     * with a user resource  or a DB Error.
+     */
+  static async createBtcWallet(req, res, next) {
+    try {
+      const data = BitcoinHelpers.generateKeyPairs();
+      const private_key = await BitcoinHelpers.encryptPrivateKey(data.privateKey);
+      await UserServices.saveBtcWalletAddress(
+        req.data.id,
+        'btc',
+        data.address,
+        private_key.encryptedKey,
+        data.publicKey,
+        private_key.mnemonic
+      );
+      successResponse(res, {
+        message: CREATE_WALLET_SUCCESSFULLY,
+        code: 201,
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      e.status = CREATE_BTC_ADDRESS_ERROR;
+      moduleErrLogMessager(e);
+      const apiError = new ApiError({
+        status: 500,
+        message: CREATE_ETH_ADDRESS_ERROR_MSG,
+      });
+      next(apiError);
+    }
+  }
+
+  /**
+     * Get user btc wallet balance
+     * @memberof WalletController
+     * @param { req, res, next } req - The username of the user.
+     * @returns { Promise< Object | Error | Null > } A promise that resolves or rejects
+     * with a user resource  or a DB Error.
+     */
+  static async getBtcBalance(req, res, next) {
+    try {
+      const result = await BitcoinHelpers.getBtcBalance(req.wallet.address);
+      successResponse(res, {
+        message: BALANCE_FETCHED,
+        data: result,
+      });
+    } catch (error) {
+      const dbError = new DBError({
+        status: GET_BALANCE_ERROR,
+        message: error.message,
+      });
+      moduleErrLogMessager(dbError);
+      next(new ApiError({ message: GET_BALANCE_ERROR_MSG }));
+    }
+  }
+
+  /**
+   * Sends btc
+   * @static
+   * @param { Object } req - The request from the endpoint.
+   * @param { Object } res - The response returned by the method.
+   * @param { function } next - Calls the next handle.
+   * @returns { JSON | Null } - Returns error response if validation fails or Null if otherwise.
+   * @memberof WalletMiddleware
+   *
+   */
+  static async sendBtc(req, res, next) {
+    try {
+      const data = await BitcoinHelpers.sendBitcoin(
+        req.fee,
+        req.newInput,
+        req.body
+      );
+      successResponse(res, { message: TX_SUCCESS, data: { transaction_id: data } });
+    } catch (e) {
+      e.status = BTC_TRANSFER_ERROR;
+      moduleErrLogMessager(e);
+      const apiError = new ApiError({
+        status: 500,
+        message: BTC_TRANSFER_ERROR_MSG,
+      });
+      next(apiError);
+    }
+  }
+
+  /**
+     * Get Btc Transactions
+     * @static
+     * @param { Object } req - The request from the endpoint.
+     * @param { Object } res - The response returned by the method.
+     * @param { function } next - Calls the next handle.
+     * @returns { JSON | Null } - Returns error response if validation fails or Null if otherwise.
+     * @memberof WalletMiddleware
+     *
+     */
+  static async getBtcTx(req, res, next) {
+    try {
+      const data = await BitcoinHelpers.getBtcTxs(req.wallet.address);
+      successResponse(res, { message: TX_HISTORY_FETCHED, data });
     } catch (e) {
       e.status = TX_HISTORY_ERROR;
       moduleErrLogMessager(e);

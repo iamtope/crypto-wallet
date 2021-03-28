@@ -84,6 +84,8 @@ export default {
   CREATE_WALLET_SUCCESSFULLY: 'Wallet created successfully',
   CHAINGATE_BASEURL: 'https://eu.eth.chaingateway.io/v1/',
   ETHERSCAN_BASEURL: 'https://api.etherscan.io/api?',
+  SOCHAIN_BASEURL: 'https://chain.so/api/v2',
+  BLOCKCHAIN_BASEURL: 'https://blockchain.info',
   AXIOS_CONFIG: { Authorization: '' },
   BALANCE_PARAM: {
     module: 'account',
@@ -109,12 +111,15 @@ export default {
   GET_BALANCE_ERROR: 'GET_BALANCE_ERROR',
   GET_BALANCE_ERROR_MSG: 'Error while getting balance info',
   CREATE_ETH_ADDRESS_ERROR: 'CREATE_ETH_ADDRESS_ERROR',
+  CREATE_BTC_ADDRESS_ERROR: 'CREATE_BTC_ADDRESS_ERROR',
   CREATE_ETH_ADDRESS_ERROR_MSG: 'Error while creating wallet',
   NEW_ADDRESS: '/newAddress',
   SEND_ETHER: '/sendEthereum',
   TX_SUCCESS: 'Transfer successful',
   ETH_TRANSFER_ERROR: 'ETH_TRANSFER_ERROR',
+  BTC_TRANSFER_ERROR: 'BTC_TRANSFER_ERROR',
   ETH_TRANSFER_ERROR_MSG: 'Error while trying to send ETH',
+  BTC_TRANSFER_ERROR_MSG: 'Error while trying to send BTC',
   TX_HISTORY_FETCHED: 'Tx fetched successfully',
   TX_HISTORY_ERROR: 'TX_HISTORY_ERROR',
   TX_HISTORY_ERROR_MSG: 'Error while trying to get tx history',
@@ -130,5 +135,7 @@ export default {
   WALLET_VALIDATION_ERROR_MSG: 'Error while fetching wallet',
   WALLET_CREATED_ALREADY: 'Wallet created already',
   LOW_FUND: 'Insufficient funds',
-  BALANCE_VALIDATION_ERROR: 'BALANCE_VALIDATION_ERROR'
+  BALANCE_VALIDATION_ERROR: 'BALANCE_VALIDATION_ERROR',
+  BITCOIN_NETWORK: config.BITCOIN_NETWORK,
+  FEE: config.TRANSCACTION_FEE
 };

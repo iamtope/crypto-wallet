@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import bluebird from 'bluebird';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import axios from 'axios';
 import constants from './constants';
 import db from '../db';
 import queries from '../db/queries/api.key';
@@ -21,7 +22,10 @@ const postOptions = {
   },
 };
 
-const { CHAINGATE_BASEURL, ETHERSCAN_BASEURL } = constants;
+const {
+  CHAINGATE_BASEURL, ETHERSCAN_BASEURL, BITCOIN_NETWORK,
+  SOCHAIN_BASEURL, BLOCKCHAIN_BASEURL
+} = constants;
 
 export default class Request {
   static async makeChainGateRequest(url, data = {}, method = 'POST') {
@@ -63,6 +67,63 @@ export default class Request {
         valueInDollars: (el.value / 1e18) * dollarRate,
         timeStamp: `${dayjs(el.timeStamp * 1000).fromNow()} - (${dayjs(el.timeStamp * 1000).format('ddd MMM-DD-YYYY H:mm:ss Z')})`,
         fee: (el.gasUsed * el.gasPrice) / 1e18,
-        feeInDollars: ((el.gasUsed * el.gasPrice) / 1e18) * dollarRate }));
+        feeInDollars: ((el.gasUsed * el.gasPrice) / 1e18) * dollarRate
+      }));
+  }
+
+  static async getBtcBalance(address) {
+    const options = {
+      url: `${SOCHAIN_BASEURL}/get_address_balance/${BITCOIN_NETWORK}/${address}`,
+      method: 'GET',
+    };
+    const utxo = await axios(options);
+    const { data } = utxo.data;
+    return data;
+  }
+
+  static async getCurrentBtcPrice() {
+    const options = {
+      url: `${BLOCKCHAIN_BASEURL}/ticker?currency=USD`,
+      method: 'GET',
+    };
+    const price = await axios(options);
+    const { USD } = price.data;
+    return USD.last;
+  }
+
+  static async getUTXO(address) {
+    // Get unspent transaction outputs
+    const options = {
+      url: `${SOCHAIN_BASEURL}/get_tx_unspent/${BITCOIN_NETWORK}/${address}`,
+      method: 'GET',
+    };
+    const utxo = await axios(options);
+    const { data } = utxo.data;
+    return data;
+  }
+
+  static async broadcastTranscation(serializedTransaction) {
+    // broadcast the transaction to the blockchain through the SoChain node
+    const options = {
+      url: `${SOCHAIN_BASEURL}/send_tx/${BITCOIN_NETWORK}`,
+      method: 'POST',
+      data: {
+        tx_hex: serializedTransaction
+      }
+    };
+    const result = await axios(options);
+    const { data } = result.data;
+    return data;
+  }
+
+  static async getBtcTxs(address) {
+    // Get unspent transaction outputs
+    const options = {
+      url: `${BLOCKCHAIN_BASEURL}/rawaddr/${address}`,
+      method: 'GET',
+    };
+    const transactions = await axios(options);
+    const { txs } = transactions.data;
+    return txs;
   }
 }
